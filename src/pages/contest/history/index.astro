@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../lib/routes';
+
+const contests = (await getCollection('contests'))
+  .filter((contest) => contest.data.kind === 'past' && !contest.data.draft)
+  .sort((a, b) => (b.data.edition ?? 0) - (a.data.edition ?? 0));
+---
+
+<BaseLayout title="이전 교내 대회" description="Solvers가 개최한 교내 알고리즘 대회 기록입니다." ogImage={null}>
+  <main>
+    <section class="plain-page-header shell">
+      <h1>이전 대회</h1>
+    </section>
+    <section class="plain-page-content shell">
+      {contests.length === 0 ? (
+        <p class="plain-status">준비 중</p>
+      ) : (
+        <div class="record-list">
+          {contests.map((contest) => (
+            <a class="archive-item" href={withBase(`contest/${contest.data.year}/${contest.data.season}/`)}>
+              <small>{contest.data.year} · {contest.data.season === 'spring' ? '봄' : '가을'}{contest.data.edition && ` · 제${contest.data.edition}회`}</small>
+              <h2>{contest.data.title}</h2>
+              <p>{contest.data.summary}</p>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  </main>
+</BaseLayout>

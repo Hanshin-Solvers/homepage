@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const [join] = await getCollection('join');
+const data = join.data;
+---
+
+<BaseLayout title={data.title} description="Solvers 가입 신청 및 문의 안내">
+  <main>
+    <section class="plain-page-header shell">
+      <h1>가입 및 문의</h1>
+    </section>
+
+    <section class="plain-page-content shell join-content">
+      {data.apply.qrImage ? (
+        <figure class="join-qr">
+          <img src={data.apply.qrImage} alt="Solvers 가입 신청 QR 코드" />
+          <figcaption>{data.apply.label}</figcaption>
+        </figure>
+      ) : null}
+      <p>
+        <strong>{data.apply.label}</strong>
+        {data.apply.url ? (
+          <a class="join-apply-link" href={data.apply.url} target="_blank" rel="noopener noreferrer">
+            가입 신청하기 <span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          data.apply.statusText ?? '가입 신청 준비 중'
+        )}
+      </p>
+      <p>
+        <strong>{data.contact.label}</strong>
+        <span class="join-contact-details">
+          {data.contact.name && <span>{data.contact.name} · </span>}
+          {data.contact.email ? <a href={`mailto:${data.contact.email}`}>{data.contact.email}</a> : (data.contact.statusText ?? '이메일 준비 중')}
+        </span>
+      </p>
+    </section>
+  </main>
+</BaseLayout>

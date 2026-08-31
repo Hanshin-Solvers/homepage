@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { sceneRoutes } from '../../lib/routes';
+
+const [about] = await getCollection('about');
+const [studies] = await getCollection('studies');
+const activityRoutes = {
+  contest: sceneRoutes.CONTEST_CURRENT,
+};
+---
+
+<BaseLayout title={about.data.title} description={about.data.intro}>
+  <main>
+    <section class="plain-page-header shell">
+      <h1>소개</h1>
+      <p class="mobile-copy-breaks">{about.data.intro}</p>
+    </section>
+
+    <section class="plain-page-content shell">
+      <section class="plain-section">
+        <h2>활동</h2>
+        <div class="activity-categories">
+          {about.data.activities.map((activity) => {
+            const linkIndex = activity.linkText ? activity.description.indexOf(activity.linkText) : -1;
+
+            return (
+              <article>
+                <h3>{activity.title}</h3>
+                {activity.linkTo && activity.linkText && linkIndex >= 0 ? (
+                  <p class="mobile-copy-breaks">
+                    {activity.description.slice(0, linkIndex)}
+                    <a href={activityRoutes[activity.linkTo]}>{activity.linkText}</a>
+                    {activity.description.slice(linkIndex + activity.linkText.length)}
+                  </p>
+                ) : (
+                  <p class="mobile-copy-breaks">{activity.description}</p>
+                )}
+                {activity.title === '스터디' && (
+                  <div class="study-list">
+                    {studies.data.tracks.map((track) => (
+                      <section>
+                        <h4>{track.name}</h4>
+                        <p class="mobile-copy-breaks">{track.description}</p>
+                      </section>
+                    ))}
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </section>
+  </main>
+</BaseLayout>

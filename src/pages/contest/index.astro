@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import YearNav from '../../components/YearNav.astro';
+import { withBase } from '../../lib/routes';
+
+const seasonOrder = { spring: 0, fall: 1 } as const;
+const contests = (await getCollection('contests'))
+  .sort((a, b) =>
+    b.data.year - a.data.year ||
+    seasonOrder[b.data.season] - seasonOrder[a.data.season]
+  );
+const contestPeriods = contests.map((contest) => ({
+  value: `${contest.data.year}-${contest.data.season}`,
+  label: `${contest.data.year}: ${contest.data.season === 'spring' ? 'Spring' : 'Fall'}`,
+}));
+---
+
+<BaseLayout title="대회" description="대회 준비 중" bodyClass="contest-index-page">
+  <main>
+    <section class="plain-page-header shell">
+      <h1>대회</h1>
+    </section>
+    <section class="plain-page-content shell">
+      <YearNav items={contestPeriods} targetPrefix="contest-period" label="대회 연도와 시즌" />
+      {contests.map((contest, index) => {
+        const value = `${contest.data.year}-${contest.data.season}`;
+        const poster = contest.data.images?.[0];
+
+        return (
+          <section
+            class="year-section"
+            id={`contest-period-${value}`}
+            role="tabpanel"
+            aria-labelledby={`contest-period-tab-${value}`}
+            hidden={index !== 0}
+          >
+            <div class="contest-period-content">
+              {poster && (
+                <figure class="contest-poster">
+                  <img
+                    src={withBase(poster)}
+                    alt={`${contest.data.title} 포스터`}
+                    loading="lazy"
+                  />
+                </figure>
+              )}
+              <p class:list={['contest-description', { 'is-standalone': !poster }]}>{contest.data.summary}</p>
+            </div>
+          </section>
+        );
+      })}
+    </section>
+  </main>
+</BaseLayout>

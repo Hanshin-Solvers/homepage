@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import YearNav from '../../components/YearNav.astro';
+
+const sortCompetitions = (a: { data: { year: number; date?: string; title: string } }, b: { data: { year: number; date?: string; title: string } }) =>
+  b.data.year - a.data.year ||
+  (a.data.date ?? '').localeCompare(b.data.date ?? '') ||
+  a.data.title.localeCompare(b.data.title, 'ko');
+
+const formatShortDate = (value: string) => {
+  const [year, month, day] = value.split('-');
+  return `${year.slice(2)}.${month}.${day}.`;
+};
+
+const formatCompetitionDate = (date?: string, dateEnd?: string) => {
+  if (!date) return null;
+  return dateEnd
+    ? `${formatShortDate(date)} ~ ${formatShortDate(dateEnd)}`
+    : formatShortDate(date);
+};
+
+const members = (await getCollection('members'))
+  .filter((member) => !member.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+const memberNames = new Map(members.map((member) => [member.id, member.data.name]));
+const allCompetitions = (await getCollection('competitions'))
+  .sort(sortCompetitions);
+const competitions = allCompetitions
+  .filter((competition) => !competition.data.draft)
+  .sort(sortCompetitions);
+const competitionYears = [...new Set(allCompetitions.map((competition) => competition.data.year))];
+const competitionYearItems = competitionYears.map((year) => ({
+  value: String(year),
+  label: String(year),
+}));
+---
+
+<BaseLayout title="연혁" description="Solvers 운영진과 외부 대회 성적을 소개합니다.">
+  <main>
+    <section class="plain-page-header shell">
+      <h1>연혁</h1>
+    </section>
+
+    <section class="plain-page-content shell">
+      <YearNav items={competitionYearItems} targetPrefix="records-year" label="연혁 연도" />
+
+      <section class="plain-section" id="people">
+        <h2>운영진</h2>
+        {members.length === 0 ? (
+          <p class="plain-status">준비 중</p>
+        ) : (
+          <div class="record-list">
+            {members.map((member) => (
+              <dl class="record-person">
+                <div>
+                  <dt>직책</dt>
+                  <dd>{member.data.role}</dd>
+                </div>
+                <div>
+                  <dt>이름</dt>
+                  <dd>{member.data.name}</dd>
+                </div>
+                <div>
+                  <dt>연락처</dt>
+                  <dd>{member.data.email ? <a href={`mailto:${member.data.email}`}>{member.data.email}</a> : '—'}</dd>
+                </div>
+              </dl>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section class="plain-section" id="achievements">
+        <h2>외부 대회 성적</h2>
+        {competitionYears.map((year, index) => {
+          const yearCompetitions = competitions.filter((competition) => competition.data.year === year);
+
+          return (
+            <section
+              class="record-year year-section"
+              id={`records-year-${year}`}
+              role="tabpanel"
+              aria-labelledby={`records-year-tab-${year}`}
+              hidden={index !== 0}
+            >
+              {yearCompetitions.length === 0 ? (
+                <p class="plain-status">준비 중</p>
+              ) : (
+                <div class="record-list">
+                  {yearCompetitions.map((competition) => {
+                    const competitionDate = formatCompetitionDate(competition.data.date, competition.data.dateEnd);
+
+                    return (
+                      <article class="record-competition">
+                        <div class="record-competition-heading">
+                          <h4>{competition.data.title}{competition.data.division && ` ${competition.data.division}`}</h4>
+                          {competitionDate && <small>{competitionDate}</small>}
+                        </div>
+                        {competition.data.summary && <p>{competition.data.summary}</p>}
+                        {competition.data.result && <p><strong>{competition.data.result}</strong></p>}
+                        {competition.data.participants && <small>참가자: {competition.data.participants.map((id) => memberNames.get(id) ?? id).join(', ')}</small>}
+                        {competition.data.link && <a href={competition.data.link} target="_blank" rel="noopener noreferrer">관련 기록 보기</a>}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </section>
+    </section>
+  </main>
+</BaseLayout>

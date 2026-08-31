@@ -1,0 +1,57 @@
+---
+import '../styles/global.css';
+import '@fontsource/montserrat-alternates/100.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { withBase } from '../lib/routes';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string | null;
+  bodyClass?: string;
+  hideFooter?: boolean;
+}
+
+const {
+  title = 'Solvers',
+  description = '한신대학교 알고리즘 소모임 Solvers 공식 홈페이지',
+  ogImage,
+  bodyClass,
+  hideFooter = false,
+} = Astro.props;
+
+const pageTitle = title === 'Solvers' ? title : `${title} · Solvers`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const hasExplicitOgImage = Object.prototype.hasOwnProperty.call(Astro.props, 'ogImage');
+const imagePath = hasExplicitOgImage ? ogImage : withBase('og.png');
+const resolvedOgImage = imagePath ? new URL(imagePath, Astro.site) : null;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/jpeg" href={withBase('favicon.jpg')} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Solvers" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {resolvedOgImage && <meta property="og:image" content={resolvedOgImage} />}
+    <meta name="twitter:card" content={resolvedOgImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {resolvedOgImage && <meta name="twitter:image" content={resolvedOgImage} />}
+    <title>{pageTitle}</title>
+  </head>
+  <body class={bodyClass}>
+    <Header />
+    <slot />
+    {!hideFooter && <Footer />}
+  </body>
+</html>

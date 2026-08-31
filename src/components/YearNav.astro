@@ -1,0 +1,74 @@
+---
+interface Props {
+  items: Array<{
+    value: string;
+    label: string;
+  }>;
+  targetPrefix: string;
+  label: string;
+}
+
+const { items, targetPrefix, label } = Astro.props;
+---
+
+{items.length > 0 && (
+  <div class="year-nav" role="tablist" aria-label={label} data-year-filter>
+    {items.map((item, index) => (
+      <button
+        class:list={['year-link', index === 0 && 'is-active']}
+        id={`${targetPrefix}-tab-${item.value}`}
+        type="button"
+        role="tab"
+        aria-controls={`${targetPrefix}-${item.value}`}
+        aria-selected={index === 0 ? 'true' : 'false'}
+        tabindex={index === 0 ? 0 : -1}
+        data-year-button
+      >
+        {item.label}
+      </button>
+    ))}
+  </div>
+)}
+
+<script>
+  const setupYearFilters = () => {
+    document.querySelectorAll<HTMLElement>('[data-year-filter]').forEach((filter) => {
+      if (filter.dataset.ready === 'true') return;
+      filter.dataset.ready = 'true';
+
+      const buttons = Array.from(filter.querySelectorAll<HTMLButtonElement>('[data-year-button]'));
+      const selectYear = (selectedButton: HTMLButtonElement, moveFocus = false) => {
+        buttons.forEach((button) => {
+          const isSelected = button === selectedButton;
+          const panelId = button.getAttribute('aria-controls');
+          const panel = panelId ? document.getElementById(panelId) : null;
+
+          button.classList.toggle('is-active', isSelected);
+          button.setAttribute('aria-selected', String(isSelected));
+          button.tabIndex = isSelected ? 0 : -1;
+          if (panel) panel.hidden = !isSelected;
+        });
+
+        if (moveFocus) selectedButton.focus();
+      };
+
+      buttons.forEach((button, index) => {
+        button.addEventListener('click', () => selectYear(button));
+        button.addEventListener('keydown', (event) => {
+          let nextIndex = index;
+          if (event.key === 'ArrowRight') nextIndex = (index + 1) % buttons.length;
+          else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + buttons.length) % buttons.length;
+          else if (event.key === 'Home') nextIndex = 0;
+          else if (event.key === 'End') nextIndex = buttons.length - 1;
+          else return;
+
+          event.preventDefault();
+          selectYear(buttons[nextIndex], true);
+        });
+      });
+    });
+  };
+
+  setupYearFilters();
+  document.addEventListener('astro:page-load', setupYearFilters);
+</script>

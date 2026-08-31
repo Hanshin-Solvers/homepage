@@ -1,0 +1,27 @@
+---
+import { sceneRoutes, withBase } from '../lib/routes';
+
+const pathname = Astro.url.pathname;
+const navItems = [
+  { label: '소개', href: sceneRoutes.ABOUT },
+  { label: '대회', href: sceneRoutes.CONTEST_CURRENT },
+  { label: '연혁', href: sceneRoutes.RECORDS },
+  { label: '가입 및 문의', href: sceneRoutes.JOIN },
+];
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href={withBase()} aria-label="Solvers 홈">
+      <span class="wordmark">Solvers</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="주요 메뉴">
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={pathname.startsWith(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,18 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  tone?: 'default' | 'contest';
+}
+
+const { eyebrow, title, description, tone = 'default' } = Astro.props;
+---
+
+<section class:list={['page-hero', `page-hero-${tone}`]}>
+  <div class="shell page-hero-inner">
+    <p class="section-kicker">{eyebrow}</p>
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </div>
+</section>

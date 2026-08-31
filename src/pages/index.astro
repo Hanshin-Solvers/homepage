@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sceneRoutes } from '../lib/routes';
+
+const [home] = await getCollection('home');
+const data = home.data;
+const chapterRoutes = {
+  about: sceneRoutes.ABOUT,
+  records: sceneRoutes.RECORDS,
+  contest: sceneRoutes.CONTEST_CURRENT,
+  join: sceneRoutes.JOIN,
+};
+
+const getMobileTitleLines = (title: string) => {
+  const words = title.trim().split(/\s+/);
+  if (words.length < 4) return [title];
+
+  return Array.from({ length: Math.ceil(words.length / 2) }, (_, index) =>
+    words.slice(index * 2, index * 2 + 2).join(' '),
+  );
+};
+---
+
+<BaseLayout
+  title={data.title}
+  description="한신대학교 알고리즘 소모임 Solvers 공식 홈페이지"
+  bodyClass="home-page"
+  hideFooter
+>
+  <main class="home-main">
+    <section class="home-stage" data-chapter-carousel data-interval="5000">
+      <nav class="chapter-tabs" role="tablist" aria-label="홈 섹션">
+        {data.chapters.map((chapter, index) => (
+          <button
+            class:list={['chapter-tab', index === 0 && 'is-active']}
+            type="button"
+            role="tab"
+            id={`chapter-tab-${chapter.id}`}
+            aria-controls={`chapter-panel-${chapter.id}`}
+            aria-selected={index === 0 ? 'true' : 'false'}
+            data-chapter-tab
+          >
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{chapter.label}</strong>
+          </button>
+        ))}
+      </nav>
+
+      <div class="chapter-book">
+        <div class="chapter-stage">
+          {data.chapters.map((chapter, index) => (
+            <section
+              class:list={['chapter-panel', index === 0 && 'is-active']}
+              id={`chapter-panel-${chapter.id}`}
+              role="tabpanel"
+              aria-labelledby={`chapter-tab-${chapter.id}`}
+              aria-hidden={index === 0 ? 'false' : 'true'}
+              data-chapter-panel
+            >
+              <div class="chapter-copy">
+                <h1>
+                  {getMobileTitleLines(chapter.title).map((line, lineIndex, lines) => (
+                    <span class="chapter-title-line">
+                      {line}{lineIndex < lines.length - 1 && ' '}
+                    </span>
+                  ))}
+                </h1>
+                <p class="chapter-description">{chapter.description}</p>
+                <a class="chapter-link" href={chapterRoutes[chapter.id]}>
+                  {chapter.linkLabel}<span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </section>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const carousel = document.querySelector<HTMLElement>('[data-chapter-carousel]');
+
+  if (carousel) {
+    const tabs = Array.from(carousel.querySelectorAll<HTMLButtonElement>('[data-chapter-tab]'));
+    const panels = Array.from(carousel.querySelectorAll<HTMLElement>('[data-chapter-panel]'));
+    const interval = Number(carousel.dataset.interval ?? 5000);
+    carousel.style.setProperty('--chapter-duration', `${interval}ms`);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let activeIndex = 0;
+    let timer: number | undefined;
+    carousel.classList.toggle('is-paused', reduceMotion);
+
+    const stopTimer = () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      timer = undefined;
+    };
+
+    const schedule = () => {
+      stopTimer();
+      if (reduceMotion || document.hidden) return;
+      timer = window.setTimeout(() => activate(activeIndex + 1), interval);
+    };
+
+    const activate = (nextIndex: number) => {
+      activeIndex = (nextIndex + tabs.length) % tabs.length;
+      tabs[activeIndex]?.classList.remove('is-active');
+      void tabs[activeIndex]?.offsetWidth;
+
+      tabs.forEach((tab, index) => {
+        const active = index === activeIndex;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+
+      panels.forEach((panel, index) => {
+        const active = index === activeIndex;
+        panel.classList.toggle('is-active', active);
+        panel.setAttribute('aria-hidden', String(!active));
+        panel.inert = !active;
+      });
+
+      schedule();
+    };
+
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => activate(index)));
+
+    document.addEventListener('visibilitychange', schedule);
+    panels.forEach((panel, index) => (panel.inert = index !== 0));
+    schedule();
+  }
+</script>

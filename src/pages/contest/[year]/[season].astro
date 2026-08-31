@@ -1,0 +1,40 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../lib/routes';
+
+export async function getStaticPaths() {
+  const contests = (await getCollection('contests')).filter(
+    (contest) => contest.data.kind === 'past' && !contest.data.draft,
+  );
+  return contests.map((contest) => ({
+    params: { year: String(contest.data.year), season: contest.data.season },
+    props: { contest },
+  }));
+}
+
+const { contest } = Astro.props;
+const { Content } = await render(contest);
+const data = contest.data;
+---
+
+<BaseLayout title={data.title} description={data.summary} ogImage={data.images?.[0] ?? null}>
+  <main>
+    <section class="plain-page-header shell">
+      <a class="back-link" href={withBase('contest/history/')}>이전 대회 목록</a>
+      <h1>{data.title}</h1>
+      <p>{data.edition ? `제${data.edition}회 · ` : ''}{data.summary}</p>
+      {data.slogan && <strong>{data.slogan}</strong>}
+    </section>
+    <section class="plain-page-content shell">
+      <dl class="detail-facts">
+        <div><dt>일정</dt><dd>{data.schedule}</dd></div>
+        <div><dt>장소</dt><dd>{data.location}</dd></div>
+        <div><dt>대상</dt><dd>{data.audience}</dd></div>
+        <div><dt>방식</dt><dd>{data.format}</dd></div>
+      </dl>
+      <div class="prose plain-prose"><Content /></div>
+      {data.result && <section class="plain-section"><h2>대회 결과</h2><p>{data.result}</p></section>}
+    </section>
+  </main>
+</BaseLayout>
