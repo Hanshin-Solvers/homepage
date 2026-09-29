@@ -15,6 +15,7 @@
     "@astrojs/check": "^0.9.10",
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/montserrat-alternates": "^5.2.8",
+    "@fontsource/noto-serif-kr": "^5.3.0",
     "astro": "^7.2.9",
     "gray-matter": "^4.0.3",
     "prettier": "^3.9.6",

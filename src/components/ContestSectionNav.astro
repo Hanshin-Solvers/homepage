@@ -1,0 +1,43 @@
+---
+interface Props {
+  items: Array<{ id: string; label: string }>;
+}
+const { items } = Astro.props;
+---
+
+<nav class="contest-section-nav" aria-label="대회 목차" data-contest-section-nav>
+  {items.map((item, index) => (
+    <a href={`#${item.id}`} aria-label={item.label} title={item.label} aria-current={index === 0 ? 'location' : undefined}>
+      <span aria-hidden="true"></span>
+    </a>
+  ))}
+</nav>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-contest-section-nav]').forEach((nav) => {
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('a'));
+    const panel = nav.closest<HTMLElement>('[role="tabpanel"]');
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (panel?.hidden) return;
+      const sections = links.map((link) => document.getElementById(link.hash.slice(1)));
+      let active = 0;
+      sections.forEach((section, index) => {
+        if (section && section.getBoundingClientRect().top <= 64) active = index;
+      });
+      if (scrollY > 0 && innerHeight + scrollY >= document.documentElement.scrollHeight - 2) active = links.length - 1;
+      links.forEach((link, index) => {
+        if (index === active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+    const queueUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener('scroll', queueUpdate, { passive: true });
+    window.addEventListener('resize', queueUpdate);
+    if (panel) new MutationObserver(queueUpdate).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+    update();
+  });
+</script>

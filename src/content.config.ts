@@ -91,20 +91,60 @@ const studies = defineCollection({
   }),
 });
 
+const contestDetail = z.object({
+  label: z.string().min(1),
+  description: z.string().min(1),
+});
+
 const contests = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/contests" }),
   schema: z.object({
     title: z.string().min(1),
+    fullName: z.string().min(1).optional(),
+    host: z.string().optional(),
+    organizer: z.string().min(1).optional(),
     edition: z.number().int().positive().optional(),
     kind: z.enum(["current", "past"]),
     year: z.number().int().min(2026),
     season: z.enum(["spring", "fall"]),
     summary: z.string().min(1),
     schedule: z.string().min(1),
+    timetable: z.array(z.object({
+      time: z.string().min(1),
+      activity: z.string().min(1),
+    })).optional(),
     location: z.string().min(1),
     audience: z.string().min(1),
     format: z.string().min(1),
-    rules: z.array(z.string().min(1)).min(1),
+    participationDetails: z.array(contestDetail).optional(),
+    proceedings: z.union([z.string(), z.object({
+      tracks: z.array(z.string().min(1)).min(1),
+      trackAssignment: z.array(z.object({
+        track: z.string().min(1),
+        eligibility: z.array(z.string().min(1)).min(1),
+      })).optional(),
+      platform: z.string().min(1),
+      platformUrl: httpsUrl.optional(),
+      ranking: z.string().min(1),
+      scoringDescription: z.array(z.string().min(1)).optional(),
+      scoringNote: z.string().optional(),
+      rankingCriteria: z.array(contestDetail).optional(),
+      details: z.array(contestDetail).optional(),
+    })]).optional(),
+    rules: z.array(z.union([z.string().min(1), z.object({
+      label: z.string().min(1),
+      description: z.string().min(1),
+      links: z.array(z.object({
+        label: z.string().min(1),
+        url: httpsUrl,
+      })).optional(),
+      note: z.string().optional(),
+    })])).min(1),
+    awards: z.union([z.string(), z.array(contestDetail)]).optional(),
+    contact: z.union([z.string(), z.object({
+      name: z.string().min(1),
+      email: z.email(),
+    })]).optional(),
     slogan: z.string().optional(),
     result: z.string().optional(),
     images: z.array(z.string().min(1)).optional(),

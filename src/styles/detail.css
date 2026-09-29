@@ -1,0 +1,169 @@
+/* Shared typography and spacing for the four detail pages. */
+.detail-page {
+  --detail-body-size: 15px;
+  --detail-section-size: 18px;
+  --detail-subheading-size: 16px;
+  --detail-label-size: 14px;
+  --detail-line-height: 1.75;
+  --detail-section-gap: 28px;
+}
+
+.detail-page .plain-page-header {
+  padding-block: 32px 20px;
+}
+
+.detail-page .plain-page-content {
+  max-width: var(--content);
+  padding-block: 12px 32px;
+  font-size: var(--detail-body-size);
+  line-height: var(--detail-line-height);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.detail-page .year-nav {
+  margin-bottom: 32px;
+}
+
+.detail-page .contest-announcement {
+  padding-block: 0;
+}
+
+.detail-page .contest-method {
+  margin-top: var(--detail-section-gap);
+}
+
+.detail-page .contest-method > h4 {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: var(--detail-subheading-size);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.detail-page .contest-method > p {
+  margin: 12px 0 0;
+}
+
+.detail-page .contest-ranking-criteria {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.detail-page .contest-ranking-criteria > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+}
+
+.detail-page .contest-ranking-criteria dt {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.detail-page .contest-ranking-criteria dd {
+  margin: 0;
+}
+
+.detail-page .detail-intro {
+  margin: 0 0 var(--detail-section-gap);
+  color: var(--text);
+}
+
+.detail-page .plain-section + .plain-section,
+.detail-page .contest-guide-section + .contest-guide-section {
+  margin-top: var(--detail-section-gap);
+  padding-top: var(--detail-section-gap);
+  border-top: 1px solid var(--border);
+}
+
+.detail-page .plain-section > h2,
+.detail-page .contest-guide-section > h3 {
+  margin: 0 0 18px;
+  color: var(--text);
+  font-size: var(--detail-section-size);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.detail-page .activity-categories h3,
+.detail-page .study-list h4,
+.detail-page .record-competition h4,
+.detail-page .contest-track-assignment dt {
+  font-size: var(--detail-subheading-size);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.detail-page .activity-categories p,
+.detail-page .study-list p,
+.detail-page .record-competition > p,
+.detail-page .record-person dd,
+.detail-page .plain-status {
+  color: var(--text);
+  font-size: var(--detail-body-size);
+  line-height: var(--detail-line-height);
+  font-weight: 400;
+}
+
+.detail-page .activity-categories article + article,
+.detail-page .record-competition + .record-competition,
+.detail-page .record-person + .record-person {
+  margin-top: var(--detail-section-gap);
+}
+
+.detail-page .record-person dt,
+.detail-page .contest-participation-facts dt,
+.detail-page .detail-facts-list dt {
+  color: var(--text-soft);
+  font-size: var(--detail-label-size);
+  font-weight: 400;
+  line-height: var(--detail-line-height);
+}
+
+.detail-page .record-competition-heading > small {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.detail-page .detail-facts-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.detail-page .detail-facts-list > div,
+.detail-page .contest-participation-facts > div {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.detail-page .detail-facts-list dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.detail-page .plain-page-content a:not(.contest-section-nav a):not(.join-apply-link):not([href^="mailto:"]) {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.detail-page .plain-page-content a[href^="mailto:"] {
+  color: var(--text);
+  text-decoration: none;
+}
+
+@media (max-width: 560px) {
+  .detail-page .detail-facts-list > div,
+  .detail-page .contest-participation-facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}

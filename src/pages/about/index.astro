@@ -10,14 +10,14 @@ const activityRoutes = {
 };
 ---
 
-<BaseLayout title={about.data.title} description={about.data.intro}>
+<BaseLayout title={about.data.title} description={about.data.intro} bodyClass="detail-page">
   <main>
     <section class="plain-page-header shell">
       <h1>소개</h1>
-      <p class="mobile-copy-breaks">{about.data.intro}</p>
     </section>
 
     <section class="plain-page-content shell">
+      <p class="detail-intro mobile-copy-breaks">{about.data.intro}</p>
       <section class="plain-section">
         <h2>활동</h2>
         <div class="activity-categories">
