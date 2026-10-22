@@ -134,6 +134,7 @@ const contests = defineCollection({
     rules: z.array(z.union([z.string().min(1), z.object({
       label: z.string().min(1),
       description: z.string().min(1),
+      items: z.array(z.string().min(1)).optional(),
       links: z.array(z.object({
         label: z.string().min(1),
         url: httpsUrl,

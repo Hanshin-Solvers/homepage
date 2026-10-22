@@ -155,6 +155,7 @@ const sectionLabels = [
                       : <dl class="contest-participation-facts contest-detailed-facts contest-rule">
                           <div><dt>{rule.label}</dt><dd>
                             {rule.description}
+                            {rule.items && <ul class="contest-reference-links">{rule.items.map((item) => <li>{item}</li>)}</ul>}
                             {rule.links && <ul class="contest-reference-links">
                               {rule.links.map((link) => <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}<span aria-hidden="true"> ↗</span></a></li>)}
                             </ul>}
