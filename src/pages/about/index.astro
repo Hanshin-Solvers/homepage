@@ -10,47 +10,94 @@ const activityRoutes = {
 };
 ---
 
-<BaseLayout title={about.data.title} description={about.data.intro} bodyClass="detail-page">
+<BaseLayout title={about.data.title} description={about.data.intro} bodyClass="detail-page reading-page about-page">
   <main>
     <section class="plain-page-header shell">
       <h1>소개</h1>
     </section>
 
-    <section class="plain-page-content shell">
-      <p class="detail-intro mobile-copy-breaks">{about.data.intro}</p>
-      <section class="plain-section">
-        <h2>활동</h2>
-        <div class="activity-categories">
-          {about.data.activities.map((activity) => {
+    <section class="plain-page-content shell about-reading">
+      <p class="about-intro">{about.data.intro}</p>
+      <div class="about-activities content-start">
+          {about.data.activities.map((activity, index) => {
             const linkIndex = activity.linkText ? activity.description.indexOf(activity.linkText) : -1;
 
             return (
-              <article>
-                <h3>{activity.title}</h3>
+              <section class="about-activity" aria-labelledby={`activity-${index}`}>
+                <h2 id={`activity-${index}`}>{activity.title}</h2>
+                <div class="about-activity-copy">
                 {activity.linkTo && activity.linkText && linkIndex >= 0 ? (
-                  <p class="mobile-copy-breaks">
+                  <p>
                     {activity.description.slice(0, linkIndex)}
                     <a href={activityRoutes[activity.linkTo]}>{activity.linkText}</a>
                     {activity.description.slice(linkIndex + activity.linkText.length)}
                   </p>
                 ) : (
-                  <p class="mobile-copy-breaks">{activity.description}</p>
+                  <p>{activity.description}</p>
                 )}
                 {activity.title === '스터디' && (
-                  <div class="study-list">
-                    {studies.data.tracks.map((track) => (
-                      <section>
-                        <h4>{track.name}</h4>
-                        <p class="mobile-copy-breaks">{track.description}</p>
+                  <div class="about-study-tracks">
+                    {studies.data.tracks.map((track, trackIndex) => (
+                      <section class="about-study-track" aria-labelledby={`study-${index}-${trackIndex}`}>
+                        <h3 id={`study-${index}-${trackIndex}`}>{track.name}</h3>
+                        <p>{track.description}</p>
                       </section>
                     ))}
                   </div>
                 )}
-              </article>
+                </div>
+              </section>
             );
           })}
-        </div>
-      </section>
+      </div>
     </section>
   </main>
 </BaseLayout>
+
+<style>
+  .about-intro {
+    margin: 0 0 var(--detail-section-gap);
+    text-wrap: pretty;
+  }
+
+  .about-activity {
+    padding-bottom: 28px;
+  }
+
+  .about-activity + .about-activity {
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .about-activity:last-child {
+    padding-bottom: 0;
+  }
+
+  .about-activity-copy p {
+    margin: 0;
+    color: var(--text);
+    text-wrap: pretty;
+  }
+
+  .about-study-tracks {
+    display: grid;
+    gap: 20px;
+    margin-top: 24px;
+    padding-inline-start: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .about-activity {
+      padding-bottom: 24px;
+    }
+
+    .about-activity + .about-activity {
+      padding-top: 24px;
+    }
+
+    .about-study-tracks {
+      margin-top: 20px;
+      padding-inline-start: 16px;
+    }
+  }
+</style>

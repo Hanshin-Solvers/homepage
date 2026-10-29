@@ -36,7 +36,7 @@ const competitionYearItems = competitionYears.map((year) => ({
 }));
 ---
 
-<BaseLayout title="연혁" description="Solvers 운영진과 외부 대회 성적을 소개합니다." bodyClass="detail-page">
+<BaseLayout title="연혁" description="Solvers 운영진과 외부 대회 성적을 소개합니다." bodyClass="detail-page reading-page">
   <main>
     <section class="plain-page-header shell">
       <h1>연혁</h1>
@@ -45,7 +45,7 @@ const competitionYearItems = competitionYears.map((year) => ({
     <section class="plain-page-content shell">
       <YearNav items={competitionYearItems} targetPrefix="records-year" label="연혁 연도" />
 
-      <section class="plain-section" id="people">
+      <section class="plain-section content-start" id="people">
         <h2>운영진</h2>
         {members.length === 0 ? (
           <p class="plain-status">준비 중</p>
@@ -94,7 +94,7 @@ const competitionYearItems = competitionYears.map((year) => ({
                     return (
                       <article class="record-competition">
                         <div class="record-competition-heading">
-                          <h4>{competition.data.title}{competition.data.division && ` ${competition.data.division}`}</h4>
+                          <h3>{competition.data.title}{competition.data.division && ` ${competition.data.division}`}</h3>
                           {competitionDate && <small>{competitionDate}</small>}
                         </div>
                         {competition.data.summary && <p>{competition.data.summary}</p>}

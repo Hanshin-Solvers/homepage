@@ -4,9 +4,11 @@ import '@fontsource/noto-serif-kr/400.css';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import YearNav from '../../components/YearNav.astro';
 import ContestSectionNav from '../../components/ContestSectionNav.astro';
+import ContestFactList from '../../components/ContestFactList.astro';
 import { withBase } from '../../lib/routes';
 
 const seasonOrder = { spring: 0, fall: 1 } as const;
+const tableCellClass = (text: string) => text.length > 30 || text.includes('\n') ? 'is-prose' : undefined;
 const contests = (await getCollection('contests'))
   .sort((a, b) =>
     b.data.year - a.data.year ||
@@ -17,14 +19,26 @@ const contestPeriods = contests.map((contest) => ({
   label: `${contest.data.year}: ${contest.data.season === 'spring' ? 'Spring' : 'Fall'}`,
 }));
 const sectionLabels = [
-  ['intro', '대회 소개'], ['participation', '참가 안내'],
-  ['awards', '시상 안내'],
-  ['schedule', '일정 및 장소'], ['format', '진행 방식'],
+  ['intro', '대회 소개'], ['schedule', '일정 및 장소'],
+  ['eligibility', '참가 자격'], ['application', '참가 신청'], ['awards', '시상 안내'],
+  ['problems', '문제 안내'], ['judging', '채점 및 순위 산정'],
   ['rules', '참가자 유의사항'], ['contact', '문의'],
 ];
+
+const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
+  const groups: Array<Exclude<(typeof rules)[number], string> | string[]> = [];
+  for (const rule of rules) {
+    if (typeof rule === 'string') {
+      const last = groups.at(-1);
+      if (Array.isArray(last)) last.push(rule);
+      else groups.push([rule]);
+    } else groups.push(rule);
+  }
+  return groups;
+};
 ---
 
-<BaseLayout title="대회" description="Solvers가 주관하는 교내 알고리즘 대회를 소개합니다." bodyClass="detail-page contest-index-page">
+<BaseLayout title="대회" description="Solvers가 주관하는 교내 알고리즘 대회를 소개합니다." bodyClass="detail-page reading-page contest-index-page">
   <main>
     <section class="plain-page-header shell">
       <h1>대회</h1>
@@ -34,6 +48,9 @@ const sectionLabels = [
       {contests.map((contest, index) => {
         const value = `${contest.data.year}-${contest.data.season}`;
         const poster = contest.data.images?.[0];
+        const ruleGroups = groupRules(contest.data.rules);
+        const awards = Array.isArray(contest.data.awards) ? contest.data.awards : [];
+        const prizeLabels = [...new Set(awards.flatMap((track) => track.prizes?.map((prize) => prize.label) ?? []))];
 
         return (
           <section
@@ -43,7 +60,7 @@ const sectionLabels = [
             aria-labelledby={`contest-period-tab-${value}`}
             hidden={index !== 0}
           >
-            <div class="contest-period-content">
+            <div class="contest-period-content content-start">
               {poster && (
                 <figure class="contest-poster">
                   <img
@@ -57,121 +74,147 @@ const sectionLabels = [
                 <article class="contest-announcement" aria-labelledby={`contest-title-${value}`}>
                   <ContestSectionNav items={sectionLabels.map(([key, label]) => ({ id: `contest-${value}-${key}`, label }))} />
                   <section class="contest-guide-section" id={`contest-${value}-intro`}>
-                    <h3>대회 소개</h3>
+                    <h2>대회 소개</h2>
                   <header class="contest-introduction">
-                    <h2 id={`contest-title-${value}`}>{contest.data.title}</h2>
+                    <h3 class="contest-title" id={`contest-title-${value}`}>{contest.data.title}</h3>
                     <p class="contest-full-name">{contest.data.fullName}</p>
                     {contest.data.slogan && <p class="contest-slogan">{contest.data.slogan}</p>}
                   </header>
-                    <dl class="contest-participation-facts contest-organizers">
-                      {contest.data.host !== undefined && <div><dt>주최</dt><dd>{contest.data.host}</dd></div>}
-                      {contest.data.organizer && <div><dt>주관</dt><dd>{contest.data.organizer}</dd></div>}
-                    </dl>
+                    <div class="contest-organizer-list">
+                      <ContestFactList items={[
+                        ...(contest.data.host !== undefined ? [{ label: '주최', description: contest.data.host }] : []),
+                        ...(contest.data.organizer ? [{ label: '주관', description: contest.data.organizer }] : []),
+                      ]} />
+                    </div>
                   </section>
-                  <section class="contest-guide-section" id={`contest-${value}-participation`}>
-                    <h3>참가 안내</h3>
-                    <dl class="contest-participation-facts">
-                      <div><dt>참가 대상</dt><dd>{contest.data.audience}</dd></div>
-                      <div><dt>참가 방식</dt><dd>{contest.data.format}</dd></div>
-                      {contest.data.participationDetails?.map((item) => (
-                        <div><dt>{item.label}</dt><dd>{item.description}</dd></div>
-                      ))}
-                    </dl>
+                  <section class="contest-guide-section contest-schedule" id={`contest-${value}-schedule`}>
+                    <h2>일정 및 장소</h2>
+                    <ContestFactList items={[
+                      { label: '개최 일시', description: contest.data.schedule },
+                      { label: '장소', description: contest.data.location },
+                      ...(contest.data.scheduleDetails ?? []),
+                    ]} />
+                    {contest.data.timetable && <>
+                      <h3>상세 일정</h3>
+                      <ContestFactList items={contest.data.timetable.map((item) => ({ label: item.time, description: item.activity }))} />
+                    </>}
                   </section>
-                  <section class="contest-guide-section" id={`contest-${value}-awards`}>
-                    <h3>시상 안내</h3>
-                    {Array.isArray(contest.data.awards)
-                      ? <table class="contest-awards-table" aria-label="트랙별 시상 안내">
-                          <thead><tr><th scope="col">구분</th>{contest.data.awards.map((item) => <th scope="col">{item.label}</th>)}</tr></thead>
-                          <tbody>
-                            <tr><th scope="row">시상 내용</th>{contest.data.awards.map((item) => <td>{item.description}</td>)}</tr>
-                          </tbody>
-                        </table>
-                      : <p class="contest-pending">{contest.data.awards ?? '추후 안내'}</p>
-                    }
-                  </section>
-                    <section class="contest-guide-section contest-schedule" id={`contest-${value}-schedule`}>
-                      <h3>일정 및 장소</h3>
-                      <dl class="contest-participation-facts">
-                        <div><dt>개최 일시</dt><dd>{contest.data.schedule}</dd></div>
-                        <div><dt>장소</dt><dd>{contest.data.location}</dd></div>
-                      </dl>
-                      {contest.data.timetable && <>
-                      <h4>상세 일정</h4>
-                      <dl class="contest-timetable">
-                        {contest.data.timetable.map((item) => (
-                          <div><dt>{item.time}</dt><dd>{item.activity}</dd></div>
-                        ))}
-                      </dl>
-                      </>}
-                    </section>
-                  <section class="contest-guide-section" id={`contest-${value}-format`}>
-                    <h3>진행 방식</h3>
-                    {typeof contest.data.proceedings === 'object' ? <>
-                      {contest.data.proceedings.trackAssignment ? (
+                  <section class="contest-guide-section" id={`contest-${value}-eligibility`}>
+                    <h2>참가 자격</h2>
+                    <ContestFactList items={[
+                      { label: '참가 대상', description: contest.data.audience },
+                      { label: '참가 방식', description: contest.data.format },
+                    ]} />
+                    {typeof contest.data.proceedings === 'object' && (
+                      contest.data.proceedings.trackAssignment ? (
                         <section class="contest-track-assignment" aria-labelledby={`track-assignment-${value}`}>
-                          <h4 id={`track-assignment-${value}`}>트랙 배정 방식</h4>
-                          <dl>
+                          <h3 id={`track-assignment-${value}`}>트랙 배정 방식</h3>
+                          <ul class="contest-list">
                             {contest.data.proceedings.trackAssignment.map((assignment) => (
-                              <div>
-                                <dt>{assignment.track}</dt>
-                                <dd><ul>{assignment.eligibility.map((item) => <li>{item}</li>)}</ul></dd>
-                              </div>
+                              <li>
+                                <strong>{assignment.track}</strong>
+                                <ul>{assignment.eligibility.map((item) => <li>{item}</li>)}</ul>
+                              </li>
                             ))}
-                          </dl>
+                            {contest.data.proceedings.trackAssignmentNote && <li>{contest.data.proceedings.trackAssignmentNote}</li>}
+                          </ul>
                         </section>
-                      ) : <ul class="contest-tracks" aria-label="대회 트랙">
+                      ) : <ul class="contest-list contest-track-list" aria-label="대회 트랙">
                         {contest.data.proceedings.tracks.map((track) => <li>{track}</li>)}
-                      </ul>}
-                      <dl class="contest-participation-facts contest-detailed-facts">
-                        <div><dt>채점 플랫폼</dt><dd>{contest.data.proceedings.platformUrl
-                          ? <a class="contest-platform-link" href={contest.data.proceedings.platformUrl} target="_blank" rel="noopener noreferrer">{contest.data.proceedings.platform}<span aria-hidden="true"> ↗</span></a>
-                          : contest.data.proceedings.platform
-                        }</dd></div>
-                        {contest.data.proceedings.details?.map((item) => (
-                          <div><dt>{item.label}</dt><dd>{item.description}</dd></div>
-                        ))}
-                      </dl>
-                      <section class="contest-method" aria-labelledby={`scoring-${value}`}>
-                        <h4 id={`scoring-${value}`}>채점 방식</h4>
-                        <p><strong>{contest.data.proceedings.ranking}</strong></p>
-                        {contest.data.proceedings.scoringDescription?.map((paragraph) => <p class="contest-scoring-description">{paragraph}</p>)}
-                        {contest.data.proceedings.scoringNote && <p class="contest-scoring-note">{contest.data.proceedings.scoringNote}</p>}
-                      </section>
-                      {contest.data.proceedings.rankingCriteria && <section class="contest-method" aria-labelledby={`ranking-${value}`}>
-                        <h4 id={`ranking-${value}`}>순위 산정 방식</h4>
-                        <dl class="contest-ranking-criteria">
-                          {contest.data.proceedings.rankingCriteria.map((item) => (
-                            <div><dt>{item.label}</dt><dd>{item.description}</dd></div>
-                          ))}
-                        </dl>
-                      </section>}
-                    </> : <p class="contest-pending">{contest.data.proceedings ?? '추후 안내'}</p>}
-                  </section>
-                  <section class="contest-guide-section" id={`contest-${value}-rules`}>
-                    <h3>참가자 유의사항</h3>
-                    {contest.data.rules.map((rule) => typeof rule === 'string'
-                      ? <p class="contest-pending">{rule}</p>
-                      : <dl class="contest-participation-facts contest-detailed-facts contest-rule">
-                          <div><dt>{rule.label}</dt><dd>
-                            {rule.description}
-                            {rule.items && <ul class="contest-reference-links">{rule.items.map((item) => <li>{item}</li>)}</ul>}
-                            {rule.links && <ul class="contest-reference-links">
-                              {rule.links.map((link) => <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}<span aria-hidden="true"> ↗</span></a></li>)}
-                            </ul>}
-                            {rule.note && <p class="contest-reference-note">{rule.note}</p>}
-                          </dd></div>
-                        </dl>
+                      </ul>
                     )}
                   </section>
+                  <section class="contest-guide-section" id={`contest-${value}-application`}>
+                    <h2>참가 신청</h2>
+                    {contest.data.participationDetails?.length
+                      ? <ContestFactList items={contest.data.participationDetails} />
+                      : <p class="contest-pending">추가 예정</p>}
+                  </section>
+                  <section class="contest-guide-section" id={`contest-${value}-awards`}>
+                    <h2>시상 안내</h2>
+                    {Array.isArray(contest.data.awards)
+                      ? <table class="contest-awards-table" aria-label="트랙별 시상 안내">
+                          <thead><tr><th scope="col">구분</th>{contest.data.awards.map((item) => <th scope="col" class={tableCellClass(item.label)}>{item.label}</th>)}</tr></thead>
+                          <tbody>
+                            {prizeLabels.map((label) => (
+                              <tr><th scope="row" class={tableCellClass(label)}>{label}</th>{awards.map((track) => {
+                                const description = track.prizes?.find((prize) => prize.label === label)?.description ?? '—';
+                                return <td class={tableCellClass(description)}>{description}</td>;
+                              })}</tr>
+                            ))}
+                            {!prizeLabels.length && <tr><th scope="row">시상 내용</th>{awards.map((item) => <td class={tableCellClass(item.description ?? '')}>{item.description ?? '추가 예정'}</td>)}</tr>}
+                          </tbody>
+                        </table>
+                      : <p class="contest-pending">{contest.data.awards ?? '추가 예정'}</p>
+                    }
+                  </section>
+                  <section class="contest-guide-section" id={`contest-${value}-problems`}>
+                    <h2>문제 안내</h2>
+                    {typeof contest.data.proceedings === 'object' ? (
+                      <ContestFactList items={contest.data.proceedings.details?.filter((item) => item.section === 'problems') ?? []} />
+                    ) : <p class="contest-pending">{contest.data.proceedings ?? '추가 예정'}</p>}
+                  </section>
+                  <section class="contest-guide-section" id={`contest-${value}-judging`}>
+                    <h2>채점 및 순위 산정</h2>
+                    {typeof contest.data.proceedings === 'object' ? <>
+                      <ul class="contest-list">
+                        <li><strong>채점 플랫폼</strong>{': '}{contest.data.proceedings.platformUrl
+                          ? <a class="contest-platform-link" href={contest.data.proceedings.platformUrl} target="_blank" rel="noopener noreferrer">{contest.data.proceedings.platform}</a>
+                          : contest.data.proceedings.platform
+                        }</li>
+                      </ul>
+                      <ContestFactList items={contest.data.proceedings.details?.filter((item) => item.section === 'judging') ?? []} />
+                      <section class="contest-method" aria-labelledby={`scoring-${value}`}>
+                        <h3 id={`scoring-${value}`}>채점 방식</h3>
+                        <p><strong>{contest.data.proceedings.ranking}</strong></p>
+                        <ul class="contest-list">
+                          {contest.data.proceedings.scoringDescription?.map((paragraph) => <li>{paragraph}</li>)}
+                          {contest.data.proceedings.scoringNote && <li>{contest.data.proceedings.scoringNote}</li>}
+                        </ul>
+                      </section>
+                      {contest.data.proceedings.rankingCriteria && <section class="contest-method" aria-labelledby={`ranking-${value}`}>
+                        <h3 id={`ranking-${value}`}>순위 산정 방식</h3>
+                        <ul class="contest-list">
+                          {contest.data.proceedings.rankingCriteria.map((item) => (
+                            <li><strong>{item.label}</strong>{': '}{item.description}</li>
+                          ))}
+                        </ul>
+                      </section>}
+                    </> : <p class="contest-pending">추가 예정</p>}
+                  </section>
+                  <section class="contest-guide-section" id={`contest-${value}-rules`}>
+                    <h2>참가자 유의사항</h2>
+                    {ruleGroups.map((rule) => Array.isArray(rule) ? (
+                      <ul class="contest-list contest-general-rules">
+                        {rule.map((text) => <li>{text}</li>)}
+                      </ul>
+                    ) : (
+                        <section class="contest-rule">
+                          <h3>{rule.label}</h3>
+                          <ul class="contest-list">
+                            <li>{rule.description.split('\n')[0]}
+                            {rule.links && <ul>
+                              {rule.links.map((link) => <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}
+                            </ul>}
+                            {rule.items && <ul>{rule.items.map((item) => <li>{item}</li>)}</ul>}
+                            </li>
+                            {rule.description.split('\n').slice(1).filter((line) => line.trim()).map((line) => <li>{line}</li>)}
+                            {rule.note && <li>
+                              {rule.note}
+                              {rule.noteItems && <ul>{rule.noteItems.map((item) => <li>{item}</li>)}</ul>}
+                            </li>}
+                          </ul>
+                        </section>
+                    ))}
+                  </section>
                   <section class="contest-guide-section" id={`contest-${value}-contact`}>
-                    <h3>문의</h3>
+                    <h2>문의</h2>
                     {typeof contest.data.contact === 'object'
-                      ? <dl class="contest-participation-facts">
-                          <div><dt>담당자</dt><dd>{contest.data.contact.name}</dd></div>
-                          <div><dt>이메일</dt><dd><a class="contest-email" href={`mailto:${contest.data.contact.email}`}>{contest.data.contact.email}</a></dd></div>
-                        </dl>
-                      : <p class="contest-pending">{contest.data.contact ?? '추후 안내'}</p>
+                      ? <ul class="contest-list">
+                          <li><strong>담당자</strong>{': '}{contest.data.contact.name}</li>
+                          <li><strong>이메일</strong>{': '}<a class="contest-email" href={`mailto:${contest.data.contact.email}`}>{contest.data.contact.email}</a></li>
+                        </ul>
+                      : <p class="contest-pending">{contest.data.contact ?? '추가 예정'}</p>
                     }
                   </section>
                 </article>

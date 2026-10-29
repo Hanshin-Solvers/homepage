@@ -1,5 +1,6 @@
 /* Shared typography and spacing for the four detail pages. */
 .detail-page {
+  --link-color: #1565c0;
   --detail-body-size: 15px;
   --detail-section-size: 18px;
   --detail-subheading-size: 16px;
@@ -148,15 +149,18 @@
   overflow-wrap: anywhere;
 }
 
+.detail-page .plain-page-content a:not(.contest-section-nav a) {
+  color: var(--link-color);
+}
+
 .detail-page .plain-page-content a:not(.contest-section-nav a):not(.join-apply-link):not([href^="mailto:"]) {
-  color: var(--text);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
 
 .detail-page .plain-page-content a[href^="mailto:"] {
-  color: var(--text);
+  color: var(--link-color);
   text-decoration: none;
 }
 
@@ -165,5 +169,168 @@
   .detail-page .contest-participation-facts > div {
     grid-template-columns: minmax(0, 1fr);
     gap: 4px;
+  }
+}
+
+/* Reading layout shared by the four detail pages. */
+.reading-page {
+  --content: 960px;
+  --detail-page-title-size: 36px;
+  --detail-section-size: 24px;
+  --detail-subheading-size: 20px;
+  --detail-minor-heading-size: 18px;
+  --detail-body-size: 17px;
+  --detail-label-size: 15px;
+  --detail-line-height: 1.8;
+}
+
+.reading-page .plain-page-header > h1 {
+  font-size: var(--detail-page-title-size);
+  line-height: 1.2;
+}
+
+.reading-page .content-start {
+  border-top: 1px solid var(--border);
+  padding-top: var(--detail-section-gap);
+}
+
+.reading-page .plain-page-content h2 {
+  margin: 0 0 24px;
+  font-size: var(--detail-section-size);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.reading-page .plain-page-content h3 {
+  margin: 0 0 12px;
+  font-size: var(--detail-subheading-size);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.reading-page .plain-page-content h4 {
+  margin: 0 0 8px;
+  font-size: var(--detail-minor-heading-size);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+.reading-page .record-competition-heading h3 {
+  margin-bottom: 0;
+}
+
+.reading-page .record-competition > p {
+  margin-top: 12px;
+}
+
+.reading-page .record-competition-heading > small,
+.reading-page .record-competition > small {
+  font-size: var(--detail-label-size);
+}
+
+.reading-page .record-competition > a,
+.reading-page .join-apply-link {
+  font-size: var(--detail-body-size);
+}
+
+.reading-page .contest-participation-facts,
+.reading-page .contest-timetable,
+.reading-page .contest-track-assignment,
+.reading-page .contest-tracks,
+.reading-page .contest-awards-table,
+.reading-page .contest-pending {
+  font-size: var(--detail-body-size);
+  line-height: var(--detail-line-height);
+}
+
+.reading-page .contest-track-assignment dt {
+  font-size: var(--detail-minor-heading-size);
+}
+
+.reading-page .contest-list + .contest-track-assignment,
+.reading-page .contest-list + .contest-track-list {
+  margin-top: var(--detail-section-gap);
+  margin-bottom: 0;
+}
+
+.reading-page .contest-scoring-note {
+  font-size: var(--detail-label-size);
+}
+
+.reading-page .contest-list,
+.reading-page .contest-list ul,
+.reading-page .contest-list ol {
+  display: block;
+  margin: 0;
+  padding-inline-start: 1.4em;
+  list-style: disc outside;
+  font-size: var(--detail-body-size);
+  line-height: var(--detail-line-height);
+}
+
+.reading-page .contest-list ul {
+  margin-top: 8px;
+  list-style-type: circle;
+}
+
+.reading-page .contest-list ol {
+  margin-top: 8px;
+  list-style-type: decimal;
+}
+
+.reading-page .contest-list li + li,
+.reading-page .contest-list + .contest-list {
+  margin-top: 8px;
+}
+
+.reading-page .contest-list strong {
+  font-weight: 600;
+}
+
+.reading-page .contest-list li::marker {
+  color: var(--text-soft);
+}
+
+.reading-page .contest-organizer-list {
+  margin-top: 24px;
+}
+
+.reading-page .contest-rule + .contest-general-rules,
+.reading-page .contest-general-rules + .contest-rule {
+  margin-top: var(--detail-section-gap);
+}
+
+.reading-page .contest-method > p + .contest-list {
+  margin-top: 12px;
+}
+
+.reading-page .contest-schedule > h3 {
+  margin-top: var(--detail-section-gap);
+}
+
+.reading-page .contest-rule + .contest-rule {
+  margin-top: var(--detail-section-gap);
+}
+
+.reading-page .contest-rule > p {
+  margin: 0;
+}
+
+.reading-page .contest-rule > .contest-reference-note {
+  margin-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .reading-page {
+    --detail-page-title-size: 28px;
+    --detail-section-size: 22px;
+    --detail-subheading-size: 19px;
+    --detail-minor-heading-size: 17px;
+    --detail-body-size: 16px;
+    --detail-label-size: 14px;
+    --detail-section-gap: 24px;
   }
 }

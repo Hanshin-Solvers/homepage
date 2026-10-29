@@ -109,6 +109,7 @@ const contests = defineCollection({
     season: z.enum(["spring", "fall"]),
     summary: z.string().min(1),
     schedule: z.string().min(1),
+    scheduleDetails: z.array(contestDetail).optional(),
     timetable: z.array(z.object({
       time: z.string().min(1),
       activity: z.string().min(1),
@@ -116,20 +117,31 @@ const contests = defineCollection({
     location: z.string().min(1),
     audience: z.string().min(1),
     format: z.string().min(1),
-    participationDetails: z.array(contestDetail).optional(),
+    participationDetails: z.array(contestDetail.extend({
+      listStyle: z.enum(['unordered', 'ordered']).optional(),
+    })).optional(),
     proceedings: z.union([z.string(), z.object({
       tracks: z.array(z.string().min(1)).min(1),
       trackAssignment: z.array(z.object({
         track: z.string().min(1),
         eligibility: z.array(z.string().min(1)).min(1),
       })).optional(),
+      trackAssignmentNote: z.string().min(1).optional(),
       platform: z.string().min(1),
       platformUrl: httpsUrl.optional(),
       ranking: z.string().min(1),
       scoringDescription: z.array(z.string().min(1)).optional(),
       scoringNote: z.string().optional(),
       rankingCriteria: z.array(contestDetail).optional(),
-      details: z.array(contestDetail).optional(),
+      details: z.array(contestDetail.extend({
+        label: z.string().min(1).optional(),
+        section: z.enum(['problems', 'judging']).default('problems'),
+        listStyle: z.enum(['unordered', 'ordered']).optional(),
+        link: z.object({
+          label: z.string().min(1),
+          url: httpsUrl,
+        }).optional(),
+      })).optional(),
     })]).optional(),
     rules: z.array(z.union([z.string().min(1), z.object({
       label: z.string().min(1),
@@ -140,8 +152,12 @@ const contests = defineCollection({
         url: httpsUrl,
       })).optional(),
       note: z.string().optional(),
+      noteItems: z.array(z.string().min(1)).optional(),
     })])).min(1),
-    awards: z.union([z.string(), z.array(contestDetail)]).optional(),
+    awards: z.union([z.string(), z.array(contestDetail.extend({
+      description: z.string().min(1).optional(),
+      prizes: z.array(contestDetail).min(1).optional(),
+    }))]).optional(),
     contact: z.union([z.string(), z.object({
       name: z.string().min(1),
       email: z.email(),

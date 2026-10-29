@@ -6,14 +6,14 @@ const [join] = await getCollection('join');
 const data = join.data;
 ---
 
-<BaseLayout title={data.title} description="Solvers 가입 신청 및 문의 안내" bodyClass="detail-page">
+<BaseLayout title={data.title} description="Solvers 가입 신청 및 문의 안내" bodyClass="detail-page reading-page">
   <main>
     <section class="plain-page-header shell">
       <h1>가입 및 문의</h1>
     </section>
 
     <section class="plain-page-content shell join-content">
-      <section class="plain-section">
+      <section class="plain-section content-start">
         <h2>{data.apply.label}</h2>
       {data.apply.qrImage ? (
         <figure class="join-qr">
@@ -23,7 +23,7 @@ const data = join.data;
       ) : null}
         {data.apply.url ? (
           <a class="join-apply-link" href={data.apply.url} target="_blank" rel="noopener noreferrer">
-            가입 신청하기 <span aria-hidden="true">↗</span>
+            가입 신청하기
           </a>
         ) : (
           data.apply.statusText ?? '가입 신청 준비 중'
