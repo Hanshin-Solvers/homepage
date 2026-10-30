@@ -200,7 +200,9 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                             </li>
                             {rule.description.split('\n').slice(1).filter((line) => line.trim()).map((line) => <li>{line}</li>)}
                             {rule.note && <li>
-                              {rule.note}
+                              {rule.noteUrl
+                                ? <a href={rule.noteUrl} target="_blank" rel="noopener noreferrer">{rule.note}</a>
+                                : rule.note}
                               {rule.noteItems && <ul>{rule.noteItems.map((item) => <li>{item}</li>)}</ul>}
                             </li>}
                           </ul>

@@ -152,6 +152,7 @@ const contests = defineCollection({
         url: httpsUrl,
       })).optional(),
       note: z.string().optional(),
+      noteUrl: httpsUrl.optional(),
       noteItems: z.array(z.string().min(1)).optional(),
     })])).min(1),
     awards: z.union([z.string(), z.array(contestDetail.extend({
