@@ -191,7 +191,20 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                     ) : (
                         <section class="contest-rule">
                           <h3>{rule.label}</h3>
-                          <ul class="contest-list">
+                          {rule.groups ? <>
+                            <p>{rule.description}</p>
+                            <ul class="contest-list">
+                              {rule.groups.map((group) => <li>
+                                <strong>{group.url
+                                  ? <a href={group.url} target="_blank" rel="noopener noreferrer">{group.label}</a>
+                                  : group.label}</strong>
+                                <ul>
+                                  {group.links?.map((link) => <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}
+                                  {group.items?.map((item) => <li>{item}</li>)}
+                                </ul>
+                              </li>)}
+                            </ul>
+                          </> : <ul class="contest-list">
                             <li>{rule.description.split('\n')[0]}
                             {rule.links && <ul>
                               {rule.links.map((link) => <li><a href={link.url} target="_blank" rel="noopener noreferrer">{link.label}</a></li>)}
@@ -205,7 +218,7 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                                 : rule.note}
                               {rule.noteItems && <ul>{rule.noteItems.map((item) => <li>{item}</li>)}</ul>}
                             </li>}
-                          </ul>
+                          </ul>}
                         </section>
                     ))}
                   </section>

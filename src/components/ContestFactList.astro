@@ -3,6 +3,7 @@ interface Props {
   items: Array<{
     label?: string;
     description: string;
+    descriptionUrl?: string;
     listStyle?: 'unordered' | 'ordered';
     link?: { label: string; url: string };
   }>;
@@ -18,7 +19,9 @@ const { items } = Astro.props;
       <li>
         {item.label && <strong>{item.label}</strong>}{lines.length > 1 ? (
           <List>{lines.map((line) => <li>{line}</li>)}</List>
-        ) : <>{item.label ? ': ' : ''}{item.description}</>}
+        ) : <>{item.label ? ': ' : ''}{item.descriptionUrl
+          ? <a href={item.descriptionUrl} target="_blank" rel="noopener noreferrer">{item.description}</a>
+          : item.description}</>}
         {item.link && <>{' ('}<a href={item.link.url} target="_blank" rel="noopener noreferrer">{item.link.label}</a>{')'}</>}
       </li>
     );

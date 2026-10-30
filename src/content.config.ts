@@ -119,6 +119,7 @@ const contests = defineCollection({
     format: z.string().min(1),
     participationDetails: z.array(contestDetail.extend({
       listStyle: z.enum(['unordered', 'ordered']).optional(),
+      descriptionUrl: httpsUrl.optional(),
     })).optional(),
     proceedings: z.union([z.string(), z.object({
       tracks: z.array(z.string().min(1)).min(1),
@@ -154,6 +155,15 @@ const contests = defineCollection({
       note: z.string().optional(),
       noteUrl: httpsUrl.optional(),
       noteItems: z.array(z.string().min(1)).optional(),
+      groups: z.array(z.object({
+        label: z.string().min(1),
+        url: httpsUrl.optional(),
+        links: z.array(z.object({
+          label: z.string().min(1),
+          url: httpsUrl,
+        })).optional(),
+        items: z.array(z.string().min(1)).optional(),
+      })).optional(),
     })])).min(1),
     awards: z.union([z.string(), z.array(contestDetail.extend({
       description: z.string().min(1).optional(),

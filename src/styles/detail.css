@@ -319,6 +319,10 @@
   margin: 0;
 }
 
+.reading-page .contest-rule > p + .contest-list {
+  margin-top: 12px;
+}
+
 .reading-page .contest-rule > .contest-reference-note {
   margin-top: 12px;
 }
