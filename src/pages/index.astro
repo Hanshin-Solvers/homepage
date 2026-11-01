@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { sceneRoutes } from '../lib/routes';
+import { sceneRoutes, withBase } from '../lib/routes';
 
 const [home] = await getCollection('home');
 const data = home.data;
@@ -51,13 +51,24 @@ const getMobileTitleLines = (title: string) => {
         <div class="chapter-stage">
           {data.chapters.map((chapter, index) => (
             <section
-              class:list={['chapter-panel', index === 0 && 'is-active']}
+              class:list={['chapter-panel', chapter.image && 'has-photo', index === 0 && 'is-active']}
               id={`chapter-panel-${chapter.id}`}
               role="tabpanel"
               aria-labelledby={`chapter-tab-${chapter.id}`}
               aria-hidden={index === 0 ? 'false' : 'true'}
               data-chapter-panel
             >
+              {chapter.image && (
+                <img
+                  class="chapter-photo"
+                  src={withBase(chapter.image)}
+                  alt=""
+                  width="1920"
+                  height="1282"
+                  fetchpriority={index === 0 ? 'high' : 'auto'}
+                  decoding="async"
+                />
+              )}
               <div class="chapter-copy">
                 <h1>
                   {getMobileTitleLines(chapter.title).map((line, lineIndex, lines) => (

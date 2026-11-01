@@ -36,7 +36,7 @@ const competitionYearItems = competitionYears.map((year) => ({
 }));
 ---
 
-<BaseLayout title="연혁" description="Solvers 운영진과 외부 대회 성적을 소개합니다." bodyClass="detail-page reading-page">
+<BaseLayout title="연혁" description="Solvers 운영진과 외부 대회 성적을 소개합니다." bodyClass="detail-page reading-page records-page">
   <main>
     <section class="plain-page-header shell">
       <h1>연혁</h1>
@@ -90,6 +90,9 @@ const competitionYearItems = competitionYears.map((year) => ({
                 <div class="record-list">
                   {yearCompetitions.map((competition) => {
                     const competitionDate = formatCompetitionDate(competition.data.date, competition.data.dateEnd);
+                    const results = competition.data.results ?? (competition.data.result
+                      ? [{ rank: competition.data.result, team: undefined, nicknames: [] }]
+                      : []);
 
                     return (
                       <article class="record-competition">
@@ -98,7 +101,30 @@ const competitionYearItems = competitionYears.map((year) => ({
                           {competitionDate && <small>{competitionDate}</small>}
                         </div>
                         {competition.data.summary && <p>{competition.data.summary}</p>}
-                        {competition.data.result && <p><strong>{competition.data.result}</strong></p>}
+                        {results.length > 0 && (
+                          <table class="record-results" aria-label={`${competition.data.title} ${competition.data.division ?? ''} 성적`}>
+                            <thead>
+                              <tr><th scope="col">성적</th><th scope="col">팀</th><th scope="col">참가자</th></tr>
+                            </thead>
+                            <tbody>
+                              {results.map((result) => (
+                                <tr>
+                                  <td data-label="성적">
+                                    <strong class="record-rank">{result.rank}</strong>
+                                  </td>
+                                  <td data-label="팀"><span class="record-team">{result.team ?? '—'}</span></td>
+                                  <td data-label="참가자">
+                                    {result.nicknames.length > 0 ? (
+                                      <ul class="record-nicknames">
+                                        {result.nicknames.map((nickname) => <li>{nickname}</li>)}
+                                      </ul>
+                                    ) : <span class="record-empty">—</span>}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
                         {competition.data.participants && <small>참가자: {competition.data.participants.map((id) => memberNames.get(id) ?? id).join(', ')}</small>}
                         {competition.data.link && <a href={competition.data.link} target="_blank" rel="noopener noreferrer">관련 기록 보기</a>}
                       </article>

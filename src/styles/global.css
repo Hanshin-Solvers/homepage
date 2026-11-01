@@ -379,7 +379,41 @@ a {
 }
 
 .chapter-copy {
+  position: relative;
+  z-index: 1;
   margin: auto 0 0;
+}
+
+.chapter-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.chapter-panel.has-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 8%) 10%, rgb(0 0 0 / 38%) 45%, rgb(0 0 0 / 88%) 100%);
+  pointer-events: none;
+}
+
+.chapter-panel.has-photo {
+  color: #fff;
+}
+
+.chapter-panel.has-photo .chapter-description,
+.chapter-panel.has-photo .chapter-link {
+  color: #fff;
+}
+
+.chapter-panel.has-photo .chapter-link:hover,
+.chapter-panel.has-photo .chapter-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 
 .chapter-panel h1 {
@@ -938,11 +972,13 @@ a {
   padding-block: 0 24px;
 }
 
-html:has(.contest-index-page) {
+html:has(.contest-index-page),
+html:has(.records-page) {
   scrollbar-width: none;
 }
 
-html:has(.contest-index-page)::-webkit-scrollbar {
+html:has(.contest-index-page)::-webkit-scrollbar,
+html:has(.records-page)::-webkit-scrollbar {
   display: none;
 }
 

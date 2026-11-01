@@ -1,12 +1,16 @@
 /* Shared typography and spacing for the four detail pages. */
 .detail-page {
-  --link-color: #1565c0;
+  --link-color: var(--text);
   --detail-body-size: 15px;
   --detail-section-size: 18px;
   --detail-subheading-size: 16px;
   --detail-label-size: 14px;
   --detail-line-height: 1.75;
   --detail-section-gap: 28px;
+}
+
+.contest-guide-section {
+  --link-color: #1565c0;
 }
 
 .detail-page .plain-page-header {
@@ -234,6 +238,132 @@
 .reading-page .record-competition > a,
 .reading-page .join-apply-link {
   font-size: var(--detail-body-size);
+}
+
+/* Shared result columns keep team and individual records comparable. */
+.records-page .record-competition-heading h3 {
+  font-size: 20px;
+}
+
+.records-page .record-results {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 20px 0 0;
+  text-align: left;
+  font-size: var(--detail-body-size);
+}
+
+.records-page .record-results th {
+  padding: 10px 12px;
+  color: var(--text-soft);
+  background: var(--surface);
+  font-size: var(--detail-label-size);
+  font-weight: 600;
+}
+
+.records-page .record-results th:first-child {
+  width: 18%;
+}
+
+.records-page .record-results th:nth-child(2) {
+  width: 26%;
+}
+
+.records-page .record-results td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.records-page .record-rank {
+  color: var(--text);
+  font-size: var(--detail-body-size);
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.records-page .record-team {
+  font-size: var(--detail-body-size);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.records-page .record-nicknames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text);
+  font-size: var(--detail-body-size);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.records-page .record-empty {
+  color: var(--text-soft);
+}
+
+.records-page .record-nicknames li {
+  overflow-wrap: anywhere;
+}
+
+.records-page .record-competition + .record-competition {
+  margin-top: 40px;
+}
+
+@media (max-width: 640px) {
+  .records-page .record-competition-heading h3 {
+    font-size: 18px;
+  }
+
+  .records-page .record-results thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .records-page .record-results,
+  .records-page .record-results tbody {
+    display: block;
+  }
+
+  .records-page .record-results tr {
+    display: grid;
+    gap: 8px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .records-page .record-results tbody tr:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .records-page .record-results td {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+    border: 0;
+    padding: 0;
+  }
+
+  .records-page .record-results td::before {
+    content: attr(data-label);
+    color: var(--text-soft);
+    font-size: var(--detail-label-size);
+    font-weight: 500;
+  }
+
+  .records-page .record-nicknames {
+    gap: 2px 12px;
+  }
 }
 
 .reading-page .contest-participation-facts,

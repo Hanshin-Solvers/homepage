@@ -26,6 +26,7 @@ const home = defineCollection({
           title: z.string().min(1),
           description: z.string().min(1),
           linkLabel: z.string().min(1),
+          image: z.string().min(1).optional(),
         }),
       )
       .length(4)
@@ -206,6 +207,11 @@ const competitions = defineCollection({
     division: z.string().optional(),
     participants: z.array(z.string().min(1)).optional(),
     result: z.string().optional(),
+    results: z.array(z.object({
+      rank: z.string().min(1),
+      team: z.string().min(1).optional(),
+      nicknames: z.array(z.string().min(1)),
+    })).optional(),
     link: httpsUrl.optional(),
     image: z.string().optional(),
     draft: z.boolean().default(false),
