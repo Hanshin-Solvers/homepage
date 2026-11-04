@@ -104,6 +104,7 @@ const contests = defineCollection({
     fullName: z.string().min(1).optional(),
     host: z.string().optional(),
     organizer: z.string().min(1).optional(),
+    sponsor: z.string().min(1).optional(),
     edition: z.number().int().positive().optional(),
     kind: z.enum(["current", "past"]),
     year: z.number().int().min(2026),
@@ -117,6 +118,7 @@ const contests = defineCollection({
     })).optional(),
     location: z.string().min(1),
     audience: z.string().min(1),
+    relatedDepartments: z.string().min(1).optional(),
     format: z.string().min(1),
     participationDetails: z.array(contestDetail.extend({
       listStyle: z.enum(['unordered', 'ordered']).optional(),
@@ -170,6 +172,7 @@ const contests = defineCollection({
       description: z.string().min(1).optional(),
       prizes: z.array(contestDetail).min(1).optional(),
     }))]).optional(),
+    awardsNote: z.string().min(1).optional(),
     contact: z.union([z.string(), z.object({
       name: z.string().min(1),
       email: z.email(),

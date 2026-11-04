@@ -84,6 +84,7 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                       <ContestFactList items={[
                         ...(contest.data.host !== undefined ? [{ label: '주최', description: contest.data.host }] : []),
                         ...(contest.data.organizer ? [{ label: '주관', description: contest.data.organizer }] : []),
+                        ...(contest.data.sponsor ? [{ label: '스폰서', description: contest.data.sponsor }] : []),
                       ]} />
                     </div>
                   </section>
@@ -116,6 +117,7 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                                 <ul>{assignment.eligibility.map((item) => <li>{item}</li>)}</ul>
                               </li>
                             ))}
+                            {contest.data.relatedDepartments && <li>관련 학과는 {contest.data.relatedDepartments}를 의미합니다.</li>}
                             {contest.data.proceedings.trackAssignmentNote && <li>{contest.data.proceedings.trackAssignmentNote}</li>}
                           </ul>
                         </section>
@@ -147,6 +149,7 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                         </table>
                       : <p class="contest-pending">{contest.data.awards ?? '추가 예정'}</p>
                     }
+                    {contest.data.awardsNote && <ul class="contest-list"><li>{contest.data.awardsNote}</li></ul>}
                   </section>
                   <section class="contest-guide-section" id={`contest-${value}-problems`}>
                     <h2>문제 안내</h2>
