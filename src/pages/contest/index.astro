@@ -149,7 +149,9 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                         </table>
                       : <p class="contest-pending">{contest.data.awards ?? '추가 예정'}</p>
                     }
-                    {contest.data.awardsNote && <ul class="contest-list"><li>{contest.data.awardsNote}</li></ul>}
+                    {contest.data.awardsNote && <ul class="contest-list">
+                      {contest.data.awardsNote.split('\n').filter((line) => line.trim()).map((note) => <li>{note}</li>)}
+                    </ul>}
                   </section>
                   <section class="contest-guide-section" id={`contest-${value}-problems`}>
                     <h2>문제 안내</h2>
