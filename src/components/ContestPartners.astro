@@ -1,0 +1,29 @@
+---
+import { withBase } from '../lib/routes';
+
+interface Props {
+  partners: Array<{ name: string; logo?: string; url?: string }>;
+}
+
+const { partners } = Astro.props;
+---
+
+<div class="contest-partners">
+  {partners.map((partner) => {
+    const Tag = partner.url ? 'a' : 'div';
+    const external = partner.url?.startsWith('https://');
+    const label = external ? `${partner.name} 홈페이지 (새 탭)` : `${partner.name} 소개`;
+    return <Tag
+      class="contest-partner"
+      href={partner.url ? (external ? partner.url : withBase(partner.url)) : undefined}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      aria-label={partner.url ? label : undefined}
+      title={partner.url ? label : undefined}
+    >
+      {partner.logo
+        ? <img src={withBase(partner.logo)} alt={partner.name} decoding="async" />
+        : <span class="contest-partner-name">{partner.name}</span>}
+    </Tag>;
+  })}
+</div>

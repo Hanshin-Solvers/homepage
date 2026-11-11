@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import YearNav from '../../components/YearNav.astro';
 import ContestSectionNav from '../../components/ContestSectionNav.astro';
 import ContestFactList from '../../components/ContestFactList.astro';
+import ContestPartners from '../../components/ContestPartners.astro';
 import { withBase } from '../../lib/routes';
 
 const seasonOrder = { spring: 0, fall: 1 } as const;
@@ -81,11 +82,24 @@ const groupRules = (rules: (typeof contests)[number]['data']['rules']) => {
                     {contest.data.slogan && <p class="contest-slogan">{contest.data.slogan}</p>}
                   </header>
                     <div class="contest-organizer-list">
-                      <ContestFactList items={[
-                        ...(contest.data.host !== undefined ? [{ label: '주최', description: contest.data.host }] : []),
-                        ...(contest.data.organizer ? [{ label: '주관', description: contest.data.organizer }] : []),
-                        ...(contest.data.sponsor ? [{ label: '스폰서', description: contest.data.sponsor }] : []),
-                      ]} />
+                      <ul class="contest-list">
+                        {contest.data.host !== undefined && <li class="contest-hosts">
+                          <strong>주최</strong>
+                          {typeof contest.data.host === 'string'
+                            ? `: ${contest.data.host}`
+                            : <ContestPartners partners={contest.data.host} />}
+                        </li>}
+                        {contest.data.organizer && <li class="contest-organizer">
+                          <strong>주관</strong>
+                          {typeof contest.data.organizer === 'string'
+                            ? `: ${contest.data.organizer}`
+                            : <ContestPartners partners={[contest.data.organizer]} />}
+                        </li>}
+                        {!!contest.data.sponsors?.length && <li class="contest-sponsors">
+                          <strong>스폰서</strong>
+                          <ContestPartners partners={contest.data.sponsors} />
+                        </li>}
+                      </ul>
                     </div>
                   </section>
                   <section class="contest-guide-section contest-schedule" id={`contest-${value}-schedule`}>

@@ -157,7 +157,7 @@
   color: var(--link-color);
 }
 
-.detail-page .plain-page-content a:not(.contest-section-nav a):not(.join-apply-link):not([href^="mailto:"]) {
+.detail-page .plain-page-content a:not(.contest-section-nav a):not(.join-apply-link):not(.contest-partner):not([href^="mailto:"]) {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
@@ -438,6 +438,69 @@
 
 .reading-page .contest-organizer-list {
   margin-top: 24px;
+}
+
+.contest-partners {
+  --partner-logo-height: clamp(28px, 10vw, 42px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 32px;
+  margin: 14px 0 20px;
+}
+
+.contest-partner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+}
+
+.contest-partner img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: var(--partner-logo-height);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.detail-page .plain-page-content a.contest-partner {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 44px;
+  transition: opacity 160ms ease;
+}
+
+.contest-partner[href]:hover {
+  opacity: 0.75;
+}
+
+.contest-partner[href]:focus-visible {
+  outline: 2px solid #666;
+  outline-offset: 5px;
+}
+
+.contest-partner-name {
+  color: var(--text);
+  font-size: var(--detail-body-size);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.contest-sponsors .contest-partner img {
+  height: calc(var(--partner-logo-height) * 1.65);
+}
+
+@media (max-width: 640px) {
+  .contest-partners {
+    gap: 16px;
+  }
 }
 
 .reading-page .contest-rule + .contest-general-rules,

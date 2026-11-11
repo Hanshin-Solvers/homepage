@@ -97,14 +97,20 @@ const contestDetail = z.object({
   description: z.string().min(1),
 });
 
+const contestPartner = z.object({
+  name: z.string().min(1),
+  logo: z.string().min(1).optional(),
+  url: z.union([httpsUrl, z.string().regex(/^\/(?!\/)/)]).optional(),
+});
+
 const contests = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/contests" }),
   schema: z.object({
     title: z.string().min(1),
     fullName: z.string().min(1).optional(),
-    host: z.string().optional(),
-    organizer: z.string().min(1).optional(),
-    sponsor: z.string().min(1).optional(),
+    host: z.union([z.string(), z.array(contestPartner).min(1)]).optional(),
+    organizer: z.union([z.string().min(1), contestPartner]).optional(),
+    sponsors: z.array(contestPartner).optional(),
     edition: z.number().int().positive().optional(),
     kind: z.enum(["current", "past"]),
     year: z.number().int().min(2026),
