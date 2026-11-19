@@ -22,7 +22,9 @@ const { partners } = Astro.props;
       title={partner.url ? label : undefined}
     >
       {partner.logo
-        ? <img src={withBase(partner.logo)} alt={partner.name} decoding="async" />
+        ? partner.logo === '/images/logos/hanshin-sw-wordmark.png'
+          ? <span class="contest-partner-sw-mark"><img src={withBase(partner.logo)} alt={partner.name} decoding="async" /></span>
+          : <img src={withBase(partner.logo)} alt={partner.name} decoding="async" />
         : <span class="contest-partner-name">{partner.name}</span>}
     </Tag>;
   })}

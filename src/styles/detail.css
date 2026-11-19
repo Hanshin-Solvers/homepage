@@ -477,6 +477,24 @@
   transition: opacity 160ms ease;
 }
 
+.contest-partner-sw-mark {
+  position: relative;
+  display: block;
+  width: calc(var(--partner-logo-height) * 4403 / 755);
+  max-width: 100%;
+  aspect-ratio: 4403 / 755;
+  overflow: hidden;
+}
+
+.contest-partner-sw-mark img {
+  position: absolute;
+  width: calc(100% * 5500 / 4403);
+  max-width: none;
+  height: auto;
+  left: calc(-100% * 219 / 4403);
+  top: calc(-100% * 201 / 755);
+}
+
 .contest-partner[href]:hover {
   opacity: 0.75;
 }
